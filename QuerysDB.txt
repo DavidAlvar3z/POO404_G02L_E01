@@ -1,0 +1,221 @@
+Query 1:
+
+-- Crear la base de datos
+CREATE DATABASE PrimeCinema_;
+USE PrimeCinema_;
+
+-- Crear la tabla Direcciones
+CREATE TABLE Direcciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    calle VARCHAR(255) NOT NULL,
+    ciudad VARCHAR(100) NOT NULL,
+    departamento VARCHAR(100) NOT NULL,
+    pais VARCHAR(100) NOT NULL
+);
+
+-- Crear la tabla Sucursales
+CREATE TABLE Sucursales (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_sucursal VARCHAR(255) NOT NULL,
+    id_direccion INT,
+    telefono VARCHAR(20) NOT NULL,
+    FOREIGN KEY (id_direccion) REFERENCES Direcciones(id)
+);
+
+-- Crear la tabla Peliculas
+CREATE TABLE Peliculas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    genero VARCHAR(100) NOT NULL,
+    clasificacion VARCHAR(10) NOT NULL,
+    formato VARCHAR(50) NOT NULL,
+    valor_entrada_tercera_edad DECIMAL(5,2) NOT NULL,
+    valor_entrada_adulto DECIMAL(5,2) NOT NULL
+);
+
+-- Crear la tabla Horarios
+CREATE TABLE Horarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL
+);
+
+-- Crear la tabla Salas
+CREATE TABLE Salas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    numero_sala INT NOT NULL,
+    id_sucursal INT,
+    id_pelicula INT,
+    id_horario INT,
+    FOREIGN KEY (id_sucursal) REFERENCES Sucursales(id),
+    FOREIGN KEY (id_pelicula) REFERENCES Peliculas(id),
+    FOREIGN KEY (id_horario) REFERENCES Horarios(id)
+);
+
+-- Crear la tabla Butacas
+CREATE TABLE Butacas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fila CHAR(1) NOT NULL,
+    columna INT NOT NULL,
+    estado VARCHAR(20) NOT NULL,
+    id_sala INT,
+    FOREIGN KEY (id_sala) REFERENCES Salas(id)
+);
+
+-- Crear la tabla Tipos_Entrada
+CREATE TABLE Tipos_Entrada (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(100) NOT NULL
+);
+
+-- Crear la tabla Usuarios
+CREATE TABLE Usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    contraseña VARCHAR(255) NOT NULL,
+    dui VARCHAR(10) NOT NULL UNIQUE
+);
+
+-- Crear la tabla Entradas
+CREATE TABLE Entradas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    id_tipo_entrada INT,
+    FOREIGN KEY (id_usuario) REFERENCES Usuarios(id),
+    FOREIGN KEY (id_tipo_entrada) REFERENCES Tipos_Entrada(id)
+);
+
+-- Crear la tabla Ventas_Sucursal
+CREATE TABLE Ventas_Sucursal (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_sucursal INT,
+    total_ventas DECIMAL(10,2) NOT NULL,
+    fecha DATE NOT NULL,
+    FOREIGN KEY (id_sucursal) REFERENCES Sucursales(id)
+);
+
+-- Crear la tabla Cambios
+CREATE TABLE Cambios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_venta INT,
+    monto_cambio DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (id_venta) REFERENCES Ventas_Sucursal(id)
+);
+
+-- Crear la tabla Reportes_Salas
+CREATE TABLE Reportes_Salas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_sala INT,
+    fecha DATE NOT NULL,
+    reporte VARCHAR(255) NOT NULL,
+    FOREIGN KEY (id_sala) REFERENCES Salas(id)
+);
+
+-- Crear la tabla Reportes_Sucursal
+CREATE TABLE Reportes_Sucursal (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_sucursal INT,
+    fecha DATE NOT NULL,
+    reporte VARCHAR(255) NOT NULL,
+    FOREIGN KEY (id_sucursal) REFERENCES Sucursales(id)
+);
+
+-- Crear la tabla Cartelera
+CREATE TABLE Cartelera (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_pelicula INT,
+    fecha DATE NOT NULL,
+    FOREIGN KEY (id_pelicula) REFERENCES Peliculas(id)
+);
+
+-- Crear la tabla Busqueda
+CREATE TABLE Busqueda (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    termino VARCHAR(255) NOT NULL,
+    fecha DATE NOT NULL
+);
+
+-- Crear la tabla Empleados
+CREATE TABLE Empleados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    contraseña VARCHAR(255) NOT NULL,
+    rol VARCHAR(50) NOT NULL,  -- Ejemplo: Administrador, Vendedor, etc.
+    fecha_contratacion DATE NOT NULL,
+    dui VARCHAR(10) NOT NULL UNIQUE  -- Asegúrate de que el DUI sea único
+);
+
+Query 2:
+
+USE PrimeCinema_;
+
+-- Insertar en Direcciones
+INSERT INTO Direcciones (calle, ciudad, departamento, pais)
+VALUES ('Calle Falsa 123', 'Ciudad 1', 'Departamento 1', 'Pais 1');
+
+-- Insertar en Sucursales
+INSERT INTO Sucursales (nombre_sucursal, id_direccion, telefono)
+VALUES ('Sucursal Centro', LAST_INSERT_ID(), '123-456-7890');
+
+-- Insertar en Peliculas
+INSERT INTO Peliculas (nombre, genero, clasificacion, formato, valor_entrada_tercera_edad, valor_entrada_adulto)
+VALUES ('Pelicula Ejemplo', 'Acción', 'PG-13', '3D', 3.50, 7.00);
+
+-- Insertar en Horarios
+INSERT INTO Horarios (hora_inicio, hora_fin)
+VALUES ('14:00:00', '16:00:00');
+
+-- Insertar en Salas
+INSERT INTO Salas (numero_sala, id_sucursal, id_pelicula, id_horario)
+VALUES (1, 1, LAST_INSERT_ID(), 1);  -- Asegúrate de que la película ya esté insertada
+
+-- Insertar en Butacas
+INSERT INTO Butacas (fila, columna, estado, id_sala)
+VALUES ('A', 1, 'Disponible', 1);
+
+-- Insertar en Tipos_Entrada
+INSERT INTO Tipos_Entrada (tipo)
+VALUES ('Adulto');
+
+-- Insertar en Usuarios
+INSERT INTO Usuarios (nombre, telefono, email, contraseña, dui)
+VALUES ('Juan Perez', '789-456-1230', 'juan.perez@gmail.com', 'contraseña123', 'DUI34567890');
+
+-- Insertar en Entradas
+INSERT INTO Entradas (id_usuario, id_tipo_entrada)
+VALUES (1, 1);
+
+-- Insertar en Ventas_Sucursal
+INSERT INTO Ventas_Sucursal (id_sucursal, total_ventas, fecha)
+VALUES (1, 150.00, '2024-11-01');
+
+-- Insertar en Cambios
+INSERT INTO Cambios (id_venta, monto_cambio)
+VALUES (1, 10.00);
+
+-- Insertar en Reportes_Salas
+INSERT INTO Reportes_Salas (id_sala, fecha, reporte)
+VALUES (1, '2024-11-01', 'Funcionó correctamente');
+
+-- Insertar en Reportes_Sucursal
+INSERT INTO Reportes_Sucursal (id_sucursal, fecha, reporte)
+VALUES (1, '2024-11-01', 'Sin incidentes');
+
+-- Insertar en Cartelera
+INSERT INTO Cartelera (id_pelicula, fecha)
+VALUES (1, '2024-11-01');
+
+-- Insertar en Busqueda
+INSERT INTO Busqueda (termino, fecha)
+VALUES ('Acción', '2024-11-01');
+
+-- Insertar en Empleados
+INSERT INTO Empleados (nombre, telefono, email, contraseña, rol, fecha_contratacion, dui)
+VALUES ('Carlos Lopez', '123-456-7890', 'carlos.lopez@gmail.com', 'pass123', 'Administrador', '2024-01-15', 'DUI12345678');
+
+INSERT INTO Empleados (nombre, telefono, email, contraseña, rol, fecha_contratacion, dui)
+VALUES ('Maria Gomez', '234-567-8901', 'maria.gomez@gmail.com', 'pass456', 'Vendedor', '2024-02-20', 'DUI23456789');
